@@ -23,8 +23,8 @@ def print_grid(grid):
             cell_value = str(cell) if cell != 0 else " "
             # Center-align the cell content within the cell width
             row_str += f" {cell_value:^{cell_width - 2}} |"
-        print(row_str)  # Print the row with cells separated by borders
-        print(border_line)  # Print the border line after each row
+        print(row_str)
+        print(border_line)
 
 def add_tile(grid):
     """Add a random '2' tile to an empty position in the grid."""
@@ -46,9 +46,9 @@ def shift_right(grid):
     """Shift all tiles in each row to the right and combine them if possible."""
     for row in grid:
         row.reverse()   # Reverse row to treat right shift as left shift
-        slide(row)      # Slide tiles to the left (original right)
-        combine(row)    # Combine adjacent tiles if they match
-        slide(row)      # Slide again to fill any gaps
+        slide(row)
+        combine(row)
+        slide(row)
         row.reverse()   # Reverse back to the original order after shifting
 
 def shift_up(grid):
@@ -56,9 +56,9 @@ def shift_up(grid):
     for col in range(4):
         # Extract the column into a temporary list
         column = [grid[row][col] for row in range(4)]
-        slide(column)       # Slide tiles to the top
-        combine(column)     # Combine adjacent tiles if they match
-        slide(column)       # Slide again to fill gaps
+        slide(column)
+        combine(column)
+        slide(column)
         # Write back the updated column to the grid
         for row in range(4):
             grid[row][col] = column[row]
@@ -66,14 +66,12 @@ def shift_up(grid):
 def shift_down(grid):
     """Shift all tiles in each column down and combine them if possible."""
     for col in range(4):
-        # Extract and reverse the column for down shift (treated as up)
         column = [grid[row][col] for row in range(4)]
-        column.reverse()    # Reverse column to handle down shift
-        slide(column)       # Slide tiles to the top (original bottom)
-        combine(column)     # Combine adjacent tiles if they match
-        slide(column)       # Slide again to fill gaps
-        column.reverse()    # Reverse back to original order after shifting
-        # Write back the updated column to the grid
+        column.reverse()
+        slide(column)
+        combine(column)
+        slide(column)
+        column.reverse()
         for row in range(4):
             grid[row][col] = column[row]
 
@@ -91,30 +89,32 @@ def combine(row):
         # If two adjacent cells have the same value, combine them
         if row[i] == row[i + 1] and row[i] != 0:
             row[i] *= 2  # Double the value of the first cell
-            row[i + 1] = 0  # Set the next cell to zero to indicate it was combined
+            row[i + 1] = 0  # Set the next cell to zero
+
+def copy_grid(grid):
+    """Creates a deep copy of the grid to compare before and after moves."""
+    return [row[:] for row in grid]
 
 def has_won(grid):
     """Check if any cell has reached 2048, indicating a win."""
-    # Scan the grid to see if any cell contains 2048
     for row in grid:
         if 2048 in row:
-            return True  # Return True if a winning cell is found
-    return False  # Return False if no cell contains 2048
+            return True
+    return False
 
 def is_game_over(grid):
     """Check if there are no valid moves left, indicating game over."""
     # Check if any cell is empty, meaning moves are still possible
     for row in grid:
         if 0 in row:
-            return False  # Game is not over if there's at least one empty cell
+            return False
     # Check for possible merges in each row and column
     for i in range(4):
         for j in range(4):
             # Check for adjacent cells with the same value vertically
             if i < 3 and grid[i][j] == grid[i + 1][j]:
-                return False  # Game is not over if a vertical merge is possible
+                return False
             # Check for adjacent cells with the same value horizontally
             if j < 3 and grid[i][j] == grid[i][j + 1]:
-                return False  # Game is not over if a horizontal merge is possible
-    # If no empty cells or merges are possible, return True for game over
+                return False
     return True
